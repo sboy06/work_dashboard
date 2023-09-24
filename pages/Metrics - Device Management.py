@@ -315,17 +315,17 @@ try:
                     unsafe_allow_html=True,
                 )
 
-                packagers = {
+                qa_specialists = {
                     "Adrian_Calletano": self.adrian_c_mtd,
                     "Adrian_Hernandez": self.adrian_h_mtd,
                     "Jesse_Ortiz": self.jesse_mtd,
                     "Eddie_Blanco": self.eddie_b_mtd,
                 }
 
-                sorted_packagers = dict(
-                    sorted(packagers.items(), key=lambda x: x[1], reverse=True)
+                sorted_qa_specialists = dict(
+                    sorted(qa_specialists.items(), key=lambda x: x[1], reverse=True)
                 )
-                for rank, (name, value) in enumerate(sorted_packagers.items(), start=1):
+                for rank, (name, value) in enumerate(sorted_qa_specialists.items(), start=1):
                     if rank == 1:
                         tab3.code(
                             f"🥇 {name.replace('_', ' ')}: {value:,}"
