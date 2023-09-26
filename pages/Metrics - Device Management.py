@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from numpy import busday_count
 import gspread
 import streamlit as st
 import ssl
@@ -13,9 +12,12 @@ from datetime import datetime
 from datetime import date
 import datetime as dt
 import datetime
+import plotly.express as px
+from streamlit_extras.app_logo import add_logo
 
 ssl._create_default_https_context = ssl._create_unverified_context
-
+st.set_page_config(layout="wide")
+add_logo("https://i.ibb.co/WGjVK32/logopng.png")
 
 try:
 
@@ -27,7 +29,6 @@ try:
             self.current_month = self.today.month
             self.current_year = self.today.year
 
-            self.st.set_page_config(layout="wide")
             self.hide_streamlit_style = """
                     <style>
                     #MainMenu {visibility: hidden;}
@@ -66,7 +67,7 @@ try:
             self.file_path = Path(__file__).parent / "hashed_pw.pkl"
             self.credentials = {"usernames": {}}
             self.authenticator = stauth.Authenticate(
-                self.credentials, " ", " ", cookie_expiry_days=60
+                self.credentials, "<any>", "<random>", cookie_expiry_days=60
             )
 
         def load_data(self):
@@ -212,9 +213,8 @@ try:
                 .sum()
             )
 
+
         def display_data(self):
-            self.imageLOGO = Image.open(urlopen("https://i.ibb.co/WGjVK32/logopng.png"))
-            st.image(self.imageLOGO)
             st.markdown(
                     "<h1 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; display: inline-block; margin: 30px 20px 10px -50px;'>Device Management: QA Tracker</h1>",
                     unsafe_allow_html=True,
@@ -225,56 +225,57 @@ try:
 
             col1, col2, col3, col4 = st.columns(4)
             col1.metric(
-                "Average daily QA'd devices (Arrow): ",
+                "Arrow: Daily QA'd Average",
                 "{:,}".format(self.arrow_passed_average),
             )
             col2.metric(
-                "Average daily QA'd devices (Dagger): ",
+                "Dagger: Daily QA'd Average",
                 "{:,}".format(self.dagger_passed_average),
             )
             col3.metric(
-                "Year to date average QA'd devices (Arrow): ",
+                "Arrow: YTD Daily Average QA'd Devices",
                 "{:,}".format(self.ytd_arrow_average),
             )
             col4.metric(
-                "Year to date average QA'd devices (Dagger): ",
+                "Dagger: YTD Daily Average QA'd Devices",
                 "{:,}".format(self.ytd_dagger_average),
             )
 
             col5, col6, col7, col8 = st.columns(4)
             col5.metric(
-                "Month to date QA'd devices (Arrow): ",
-                "{:,}".format(self.mtd_arrow.sum()),
+                "Arrow: MTD QA'd Devices",
+                "{:,}".format(self.mtd_arrow.sum()), 
             )
             col6.metric(
-                "Month to date QA'd devices (Dagger): ",
+                "Dagger: MTD QA'd Devices",
                 "{:,}".format(self.mtd_dagger.sum()),
             )
             col7.metric(
-                "Year to date QA'd devices (Arrow): ",
+                "Arrow: YTD Total QA'd Devices",
                 "{:,}".format(self.ytd_arrow_qty.sum()),
             )
             col8.metric(
-                "Year to date QA'd devices (Dagger): ",
+                "Dagger: YTD Total QA'd Devices",
                 "{:,}".format(self.ytd_dagger_qty.sum()),
+
             )
 
             tab1, tab2, tab3 = st.tabs(["Arrow", "Dagger", "Team Metrics"])
 
             with tab1:
                 st.markdown(
-                    "<h4 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; border: 2px solid white; display: inline-block; margin: 30px 20px 40px 45px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Arrow</h4>",
+                    "<h4 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; border: 2px solid white; display: inline-block; margin: 30px 20px 40px 0px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Arrow</h4>",
                     unsafe_allow_html=True,
                 )
                 st.markdown(
-                    "<h6 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; display: inline-block; margin: 30px 20px 40px 20px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Line ChartChart</h6>",
+                    "<h6 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; display: inline-block; margin: 30px 20px 40px 0px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Line ChartChart</h6>",
                     unsafe_allow_html=True,
                 )
                 st.line_chart(
                     self.arrow_qa, x="Date", y="Quantity", width=150, height=300
                 )
                 st.markdown(
-                    "<h6 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; display: inline-block; margin: 30px 20px 40px 20px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Month-to-Date Bar Chart</h6>",
+                    "<h6 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; display: inline-block; margin: 30px 20px 40px 0px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Month-to-Date Bar Chart</h6>",
                     unsafe_allow_html=True,
                 )
                 st.bar_chart(
@@ -287,18 +288,18 @@ try:
 
             with tab2:
                 st.markdown(
-                    "<h4 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; border: 2px solid white; display: inline-block; margin: 30px 20px 40px 45px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Dagger</h4>",
+                    "<h4 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; border: 2px solid white; display: inline-block; margin: 30px 20px 40px 0px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Dagger</h4>",
                     unsafe_allow_html=True,
                 )
                 st.markdown(
-                    "<h6 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; display: inline-block; margin: 30px 20px 40px 20px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Line ChartChart</h6>",
+                    "<h6 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; display: inline-block; margin: 30px 20px 40px 0px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Line ChartChart</h6>",
                     unsafe_allow_html=True,
                 )
                 st.line_chart(
                     self.dagger_qa, x="Date", y="Quantity", width=150, height=300
                 )
                 st.markdown(
-                    "<h6 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; display: inline-block; margin: 30px 20px 40px 20px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Month-to-Date Bar Chart</h6>",
+                    "<h6 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; display: inline-block; margin: 30px 20px 40px 0px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Month-to-Date Bar Chart</h6>",
                     unsafe_allow_html=True,
                 )
                 st.bar_chart(
@@ -311,21 +312,21 @@ try:
 
             with tab3:
                 st.markdown(
-                    "<h4 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; border: 2px solid white; display: inline-block; margin: 30px 20px 40px 20px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Top QA Specialists</h4>",
+                    "<h4 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; border: 2px solid white; display: inline-block; margin: 30px 20px 40px 0px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Top Team Members</h4>",
                     unsafe_allow_html=True,
                 )
 
-                qa_specialists = {
+                packagers = {
                     "Adrian_Calletano": self.adrian_c_mtd,
                     "Adrian_Hernandez": self.adrian_h_mtd,
                     "Jesse_Ortiz": self.jesse_mtd,
                     "Eddie_Blanco": self.eddie_b_mtd,
                 }
 
-                sorted_qa_specialists = dict(
-                    sorted(qa_specialists.items(), key=lambda x: x[1], reverse=True)
+                sorted_packagers = dict(
+                    sorted(packagers.items(), key=lambda x: x[1], reverse=True)
                 )
-                for rank, (name, value) in enumerate(sorted_qa_specialists.items(), start=1):
+                for rank, (name, value) in enumerate(sorted_packagers.items(), start=1):
                     if rank == 1:
                         tab3.code(
                             f"🥇 {name.replace('_', ' ')}: {value:,}"
@@ -347,7 +348,26 @@ try:
 
                 st.markdown("---")
                 st.markdown(
-                    "<h4 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; border: 2px solid white; display: inline-block; margin: 30px 20px 30px 20px; ; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Individual Averages</h4>",
+                    "<h4 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; border: 2px solid white; display: inline-block; margin: 30px 20px 30px 0px; ; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>Pie Chart</h4>",
+                    unsafe_allow_html=True,
+                )
+                labels = ['Adrian Calletano', 'Adrian Hernandez', 'Jesse Ortiz', 'Eddie Blanco']
+                values = [self.adrian_c_mtd, self.adrian_h_mtd, self.jesse_mtd, self.eddie_b_mtd]
+                
+                fig = px.pie(
+                    values=values, 
+                    names=labels,
+                    color_discrete_sequence=px.colors.sequential.Viridis,
+                    title='MTD Team % Comparison',
+                    hole=.3
+                )
+                fig.update_layout(width=900, height=700)
+                fig.update_traces(textinfo='percent+label', pull=[0.04, 0.04, 0.04, 0.04])
+                st.plotly_chart(fig, use_container_width=False)
+
+                st.markdown("---")
+                st.markdown(
+                    "<h4 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; border: 2px solid white; display: inline-block; margin: 30px 20px 30px 0px; ; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'>MTD: Individual Daily Averages</h4>",
                     unsafe_allow_html=True,
                 )
                 st.markdown("")
@@ -362,6 +382,19 @@ try:
                 )
                 col11.metric("Jesse Ortiz", "{:,}".format(self.jesse_ortiz_average))
                 col12.metric("Eddie Blanco", "{:,}".format(self.eddie_blanco_average))
+
+                st.markdown("---")
+                st.write("")
+                st.markdown("<h4 style='text-align: center; font-family: Avant Garde; align: center; padding: 5px 17px; border: 2px solid white; display: inline-block; margin: 30px 20px 30px 0px; border-radius: 10px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);'> Bubble Chart of Daily Averages</h4>",
+                            unsafe_allow_html=True)
+                bubble_data = {
+                    'Team Members': ['Adrian Calletano', 'Adrian Hernandez', 'Jesse Ortiz', 'Eddie Blanco'],
+                    'Individual Averages': [self.adrian_calletano_average, self.adrian_hernandez_average, self.jesse_ortiz_average, self.eddie_blanco_average],
+                }
+                df_bubble = pd.DataFrame(bubble_data)
+
+                fig = px.scatter(df_bubble, x='Team Members', y='Individual Averages', size='Individual Averages', color='Team Members')
+                st.plotly_chart(fig)
 
                 st.markdown("---")
                 st.write("")
